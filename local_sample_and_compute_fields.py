@@ -3,8 +3,10 @@ import numpy as np
 from matplotlib import pyplot as plt
 from numba import jit as njit
 import time
+from import_swc_data import curves  # Import the curves list from import_swc_data
 
-def get_local_fields_at_a_point(centerlines, point, R, rod_diameter, visualize=False):
+
+def get_local_fields_at_a_point(centerlines, point, R, rod_diameter, visualize=True):
     _,labels,edges_all_in_one = get_edges_labels_from_centerlines(centerlines)
     
     I_local = sample_edges_locally_and_return_indices(edges_all_in_one,point,R)
@@ -296,42 +298,44 @@ def testLk():
     ax.axis('equal')
     
 # %%
+def label_edges(edges):
+    labels = []
+    for edge in edges:
+        if len(edge) > 0:  # Ensure non-empty edges
+            labels.append(np.array(edge))
+    if labels:
+        return np.concatenate(labels)  # Use concatenate instead of hstack
+    else:
+        return np.array([])  # Return an empty array if labels are empty
+
 def main():
+    # Use the curves variable from import_swc_data.py as centerlines
+    centerlines = curves
     
-    centerlines = []
-    for i in range(10):
-        x = np.cumsum(np.random.randn(100))
-        y = np.cumsum(np.random.randn(100))
-        z = np.cumsum(np.random.randn(100))
-        x = np.convolve(x, np.ones(5)/5, mode='valid')
-        y = np.convolve(y, np.ones(5)/5, mode='valid')
-        z = np.convolve(z, np.ones(5)/5, mode='valid')        
-        centerlines.append(np.vstack([x,y,z]).T)
-        
-    fig,ax=plt.subplots(subplot_kw={'projection':'3d'})
+    fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
     for r in centerlines:
-        ax.plot(r[:,0],r[:,1],r[:,2])
+        ax.plot(r[:, 0], r[:, 1], r[:, 2])
     
-    point = np.array([0,0,0])
+    point = np.array([0, 0, 0])
     R = 3
     rod_diameter = 0.01
     
-    get_local_fields_at_a_point(centerlines, point, R, rod_diameter,visualize=True)
+    get_local_fields_at_a_point(centerlines, point, R, rod_diameter, visualize=True)
     
-    h = R/2
+    h = R / 2
     n_field, phi_field, e_field, S_field, center_x, center_y, center_z = get_local_fields_over_domain(centerlines, R, h, rod_diameter)
     
-    mid_section = n_field.shape[2]//2
+    mid_section = n_field.shape[2] // 2
     
-    fig,ax=plt.subplots(2,2)
-    ax[0,0].imshow(n_field[:,:,mid_section])
-    ax[0,0].set_title('Number of local curves')
-    ax[0,1].imshow(phi_field[:,:,mid_section])
-    ax[0,1].set_title('Local volume fraction')
-    ax[1,0].imshow(e_field[:,:,mid_section])
-    ax[1,0].set_title('Local average crossing number')
-    ax[1,1].imshow(S_field[:,:,mid_section])
-    ax[1,1].set_title('Local orientational order')
+    fig, ax = plt.subplots(2, 2)
+    ax[0, 0].imshow(n_field[:, :, mid_section])
+    ax[0, 0].set_title('Number of local curves')
+    ax[0, 1].imshow(phi_field[:, :, mid_section])
+    ax[0, 1].set_title('Local volume fraction')
+    ax[1, 0].imshow(e_field[:, :, mid_section])
+    ax[1, 0].set_title('Local average crossing number')
+    ax[1, 1].imshow(S_field[:, :, mid_section])
+    ax[1, 1].set_title('Local orientational order')
     # Try use Polyscope to visualize 3D graphics
     # https://polyscope.run/
     
