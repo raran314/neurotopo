@@ -3,6 +3,10 @@ import pandas as pd
 import networkx as nx
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # Ensure 3D plotting is imported
+import csv
+
+def flatten_array(arr):
+    return arr.flatten().tolist()
 
 def swc_to_graph(swc):
     """
@@ -44,13 +48,18 @@ fig = plt.figure()
 from scipy.ndimage import gaussian_filter1d
 sigma = 5
 ax = fig.add_subplot(111, projection='3d')
-for i in range(len(curves)):
-    curve = curves[i]
-    curve = sort_curve(curve)
-    # smooth out with Gaussian kernel
+with open('arrays.csv', 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    for i in range(len(curves)):
+        curve = curves[i]
+        curve = sort_curve(curve)
+        # smooth out with Gaussian kernel
 
-    curve = gaussian_filter1d(curve, sigma=sigma, axis=0)
-    ax.plot(curve[:, 0], curve[:, 1], curve[:, 2], '-', linewidth=0.7, markersize=2)
+        curve = gaussian_filter1d(curve, sigma=sigma, axis=0)
+        ax.plot(curve[:, 0], curve[:, 1], curve[:, 2], '-', linewidth=0.7, markersize=2)
+        flattened_array = flatten_array(curve)
+        shape_info = [curve.shape[0], curve.shape[1]]
+        writer.writerow(shape_info + flattened_array)
 
 # Manually set equal aspect ratio
 x_limits = ax.get_xlim3d()
