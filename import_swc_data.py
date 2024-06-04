@@ -16,8 +16,8 @@ def swc_to_graph(swc):
             G.add_edge(row['n'], row['parent'])
     return G
 
-swc_file_path = '/Users/romyaran/Desktop/Summer 2024/confocal_stack.swc'
-dta = pd.read_csv(swc_file_path, delim_whitespace=True, header=None, comment='#', names=['n', 'type', 'x', 'y', 'z', 'r', 'parent'])
+swc_file_path = '/Users/romyaran/Desktop/Summer_2024/confocal_stack.swc'
+dta = pd.read_csv(swc_file_path, sep='\s+', header=None, comment='#', names=['n', 'type', 'x', 'y', 'z', 'r', 'parent'])
 
 G = swc_to_graph(dta)
 
@@ -41,10 +41,15 @@ def sort_curve(rr):
     return centroid + rr_centered[sorted_indices]
 
 fig = plt.figure()
+from scipy.ndimage import gaussian_filter1d
+sigma = 5
 ax = fig.add_subplot(111, projection='3d')
 for i in range(len(curves)):
     curve = curves[i]
     curve = sort_curve(curve)
+    # smooth out with Gaussian kernel
+
+    curve = gaussian_filter1d(curve, sigma=sigma, axis=0)
     ax.plot(curve[:, 0], curve[:, 1], curve[:, 2], '-', linewidth=0.7, markersize=2)
 
 # Manually set equal aspect ratio
