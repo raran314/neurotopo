@@ -22,7 +22,7 @@ filamentFields::filamentFields(const std::vector<Eigen::MatrixXd>& filament_node
     get_all_edges();
     get_node_labels();
     get_edge_labels();
-    // compute_total_linking_matrix();
+    compute_total_linking_matrix();
 }
 
 filamentFields::filamentFields(const std::vector<Eigen::MatrixXd>& filament_nodes_list, const Eigen::MatrixXd& contact_array) :
@@ -39,7 +39,7 @@ filamentFields::filamentFields(const std::vector<Eigen::MatrixXd>& filament_node
     get_all_edges();
     get_node_labels();
     get_edge_labels();
-    // compute_total_linking_matrix();
+    compute_total_linking_matrix();
 }
 
 void filamentFields::update_filament_nodes_list(const std::vector<Eigen::MatrixXd>& _filament_nodes_list)
@@ -54,7 +54,7 @@ void filamentFields::update_filament_nodes_list(const std::vector<Eigen::MatrixX
     get_all_edges();
     get_node_labels();
     get_edge_labels();
-    // compute_total_linking_matrix();
+    compute_total_linking_matrix();
 }
 
 void filamentFields::update_contact_array(const Eigen::MatrixXd& _contact_array)
@@ -359,12 +359,14 @@ Eigen::MatrixXd filamentFields::analyze_local_volume_from_precomputed(const Eige
     }
     // Unique labels    
     std::vector<int> unique_labels;
+    
     unique_labels.reserve(local_edge_count); // Reserve memory to avoid multiple allocations
     for (int i = 0; i < local_edge_count; ++i) {        
         int label = local_edge_labels(i);
         if (std::find(unique_labels.begin(), unique_labels.end(), label) == unique_labels.end()) {
             unique_labels.push_back(label);
             number_of_labels++;
+            
         }
     }
 
@@ -535,6 +537,7 @@ void filamentFields::compute_edge_wise_entanglement(const Eigen::MatrixXd& _all_
     //     entanglement_matrix(idx, jdx) = lk;
     // }
 }
+
 
 
 
