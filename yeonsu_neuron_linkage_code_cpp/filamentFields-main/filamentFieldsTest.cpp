@@ -106,8 +106,9 @@ int main() {
     //std::cout << "No need to store this string";
     // Write the Eigen matrices to a new CSV file
     write_eigen_matrices_to_csv(eigen_matrices, "eigen_matrices.csv");
-
+    
     filamentFields filament(eigen_matrices);
+    
     Eigen::Vector3d query_point(10, 10, 10);
     double R_omega = 1;
     double rod_radius = 1;
